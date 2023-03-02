@@ -15,7 +15,9 @@ module.exports = {
         },
         async getMovie(parent, {movieId}){
             try{
-                const movie = await prisma.movie.findById(movieId)
+                const movie = await prisma.movie.findFirst({
+                    where: { id: Number(movieId) },
+                  })
 
                 console.log(movie);
                 if(movie) {
@@ -36,20 +38,17 @@ module.exports = {
             const user = await checkAuth(context);
                 console.log('user', user);
 
-
+                console.log('=====');
    
-            const newMovie = new Movie({
-                user: user.id,
-                userName: user.userName,
-                createdAt: new Date().toISOString(),
+            const newMovie = {
+                userId: user.id,
                 description,
                 movieName,
                 directorName,
                 releaseDate,
-            });
-
-
-            const movie = await new prisma.movie.save()
+            };
+            console.log('newMovie', newMovie);
+            const movie = await prisma.movie.create({data:newMovie});
 
 
             return movie;

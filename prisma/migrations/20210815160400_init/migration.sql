@@ -16,9 +16,7 @@ CREATE TABLE "Movie" (
     "description" TEXT,
     "directorName" TEXT,
     "releaseDate" TEXT,
-    "userId" INTEGER NOT NULL,
-
-    PRIMARY KEY ("id")
+    "userId" INTEGER NOT NULL
 );
 
 -- AddForeignKey
@@ -36,9 +34,7 @@ CREATE TABLE "Review" (
     "rating" INTEGER ,
     "comment" TEXT,
     "userId" INTEGER NOT NULL,
-    "movieId" INTEGER NOT NULL,
-
-    PRIMARY KEY ("id")
+    "movieId" INTEGER NOT NULL
 );
 
 

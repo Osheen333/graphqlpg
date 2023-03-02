@@ -14,7 +14,7 @@ function generateToken(user){
         id: user.id,
         email: user.email,
         name: user.name
-    }, SECRET_KEY, { expiresIn: '1h'})
+    }, SECRET_KEY, { expiresIn: '3h'});
 }
 module.exports = {
 
@@ -22,15 +22,16 @@ module.exports = {
     Mutation: {
         async login(parent, { name, password}){
 
-
+            console.clear();
+            console.log({name, password});
             const {errors, valid } = validateLoginInput(name, password);
            
             if(!valid) {
                 throw new UserInputError('Errors', {errors} )
             }
-            console.log('======User', await prisma);
-            const user = await prisma.user.findOne({ name });
-
+            const user = await prisma.user.findFirst({
+                where: { name: String(name) },
+              });
 
             if(!user) {
                 errors.general = "User not found ";
@@ -38,8 +39,6 @@ module.exports = {
 
 
             }
-            console.log({name, password});
-            console.log("user", JSON.stringify(user));
             const match = await bcrypt.compare(password, user.password);
             if(!match) {
                 errors.general = "Wrong credentials";
@@ -49,8 +48,7 @@ module.exports = {
 
 
             return {
-                ...user._doc,
-                id: user._id,
+                ...user,
                 token
             }
         },
@@ -73,8 +71,6 @@ module.exports = {
             const user = await prisma.user.findFirst({
                 where: { name: String(name) },
               })
-              console.log('=======');
-            console.log(JSON.stringify(user));
             if(user){
                 throw new UserInputError('name is taken', {
                     errors: {
@@ -93,19 +89,17 @@ module.exports = {
                 name,
                 password,
             };
-            console.clear()
-            console.log(newUser);
 
             const res =  await prisma.user.create({data:newUser})
             
 
 
-            const token =  generateToken(res);
+            const token = await generateToken(res);
 
-
+                console.log('res========', res);
+                console.log('token ===', token);
             return {
-                ...res._doc,
-                id: res._id,
+                ...res,
                 token
             }
         },

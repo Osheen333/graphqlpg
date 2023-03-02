@@ -5,7 +5,7 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
 
 type Movie{
-    id: ID!
+    id: ID
     description: String
     movieName: String!
     createdAt: String
@@ -29,7 +29,6 @@ type User{
         email: String!
         token: String!
         name: String!
-        createdAt: String!
 }
 
 input RegisterInput {
