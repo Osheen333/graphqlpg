@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 const {UserInputError} = require('apollo-server');
 const {prisma} = require('../../database');
 const {
@@ -9,7 +11,6 @@ const {
 } = require('../../util/validators');
 
 const checkAuth = require('../../util/check-auth');
-require('dotenv').config();
 
 function generateToken(user) {
   return jwt.sign(
@@ -86,7 +87,7 @@ module.exports = {
       const newUser = {
         email,
         name,
-        passwordHashed,
+        password: passwordHashed,
       };
 
       const res = await prisma.user.create({data: newUser});
@@ -128,7 +129,7 @@ module.exports = {
 
           const res = await prisma.user.update({
             where: {id: user.id},
-            data: {hashedPassword},
+            data: {password: hashedPassword},
           });
 
           return res;

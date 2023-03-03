@@ -13,7 +13,7 @@ module.exports.validateRegisterInput = (
   }
   if (email.trim() === '') {
     errors.email = 'email mut not empty';
-  } else if (!email.match(process.env.regEx)) {
+  } else if (!email.match(process.env.emailRegex)) {
     errors.email = 'email must be vallid';
   }
   if (password.trim() === '') {
@@ -31,7 +31,7 @@ module.exports.validateLoginInput = (email, password) => {
   const errors = {};
   if (email.trim() === '') {
     errors.email = 'email mut not empty';
-  } else if (!process.env.regEx) {
+  } else if (!process.env.emailRegex) {
     errors.email = 'email must be vallid';
   }
   if (password.trim() === '') {
