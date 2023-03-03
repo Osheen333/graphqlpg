@@ -4,9 +4,9 @@ const reviewsResolvers = require('./reviews')
 
 
 module.exports = {
-    Movie: {
-    reviewCount: (parent) => parent.reviews.length
-    },
+    // Movie: {
+    // reviewCount: (parent) => parent.reviews.length
+    // },
     Query: {
         ...movieResolvers.Query
     },

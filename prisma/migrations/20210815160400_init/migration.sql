@@ -23,7 +23,8 @@ CREATE TABLE "Movie" (
 ALTER TABLE "Movie"
   ADD CONSTRAINT "Movie_userId_fkey"
   FOREIGN KEY ("userId")
-  REFERENCES "User"("id");
+  REFERENCES "User"("id")
+  ON DELETE SET NULL ON UPDATE CASCADE;
 
 
 
@@ -42,14 +43,16 @@ CREATE TABLE "Review" (
 ALTER TABLE "Review"
   ADD CONSTRAINT "Review_userId_fkey"
   FOREIGN KEY ("userId")
-  REFERENCES "User"("id");
+  REFERENCES "User"("id")
+  ON DELETE SET NULL ON UPDATE CASCADE;
 
 
 -- AddForeignKey
 ALTER TABLE "Review"
   ADD CONSTRAINT "Review_movieId_fkey"
   FOREIGN KEY ("movieId")
-  REFERENCES "Movie"("id");
+  REFERENCES "Movie"("id")
+  ON DELETE SET NULL ON UPDATE CASCADE;
 
 
 

@@ -5,55 +5,90 @@ const { prisma } = require("../../database.js");
 
 module.exports = {
     Mutation: {
-        createReview: async (parent, {movieId, body }, context) => {
+        createReview: async (parent, {movieId, comment, rating }, context) => {
 
 
             const user = checkAuth(context);
 
-            if(body.trim() === ''){
+            if(comment.trim() === ''){
                 throw new UserInputError('Empty Review', {
                     errors: {
-                        body: "Review body must not be empty"
+                        comment: "Review comment must not be empty"
                     }
                 })
             }else {
-                const movie = await prisma.movie.findById(movieId);
-
+                const movie = await prisma.movie.findFirst({
+                    where: { id: Number(movieId) },
+                  })
 
                 if(movie) {
-                    movie.reviews.unshift({
-                        body,
-                        userName: user.userName,
-                        createdAt: new Date().toISOString()
-                    })
-                    await movie.save();
-                    return movie;
+                    console.log('user====+++', user);
+                    const newReview = {
+                        comment,
+                        rating,
+                        movieId,
+                        userId: user.id
+                    };
+                  
+                  const reviewdMoview =  await prisma.review.create({data:newReview});
+                    return reviewdMoview;
 
 
                 }else throw new UserInputError('Movies not found');
             }
                
             },
-            async deleteReview(parent, {movieId, reviewId}, context){
-                const {userName} = checkAuth(context);
-                const movie = await prisma.movie.findById(movieId);
+            async deleteReview(parent, { reviewId}, context){
+                const user = checkAuth(context);
+            
+
+                    // TODO: reviewd user is only able to delete review
+
+                         const review = await prisma.review.delete({
+                    where: {
+                      id: +reviewId,
+                    },
+                  });   
+
+                  console.log('review', review);
+                  return 'review deleted successfuly';
+               
+          
+        },
+        updateReview: async (parent, {reviewId, comment, rating }, context) => {
 
 
-                if(movie){
-                    const reviewIndex = movie.reviews.findIndex( c => c.id === reviewId);
+            const user = checkAuth(context);
 
-
-                    console.log('movie.reviews', movie.reviews);
-                    if(movie.reviews[reviewIndex].userName === userName){
-                        movie.reviews.splice(reviewIndex, 1);
-                        await movie.save();
-                        return movie;
-                    }else {
-                        throw new AuthenticationError('Action not allowed')
+            if(comment.trim() === ''){
+                throw new UserInputError('Empty Review', {
+                    errors: {
+                        comment: "Review comment must not be empty"
                     }
-                }else {
-                    throw new UserInputError('movie not found')
-                }
-        }
+                })
+            }else {
+                const movie = await prisma.review.findFirst({
+                    where: { id: Number(reviewId) },
+                  })
+
+                if(movie) {
+                    console.log('user====+++', user);
+                    const newReview = {
+                        comment,
+                        rating,
+                    };
+                  
+                  const reviewdMoview =  await prisma.review.update({
+                    where: { id: +reviewId},
+                    data: newReview,
+                  });
+
+                    return reviewdMoview;
+
+
+                }else throw new UserInputError('Review not found');
+            }
+               
+            },
     }
 }

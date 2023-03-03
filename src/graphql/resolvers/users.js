@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const User = require('../../schema');
-const {validateRegisterInput, validateLoginInput} = require('../../util/validators')
+const {validateRegisterInput, validateLoginInput, validateChangePassword} = require('../../util/validators')
 const {UserInputError } = require('apollo-server');
 const { prisma } = require("../../database.js");
+const checkAuth = require('../../util/check-auth')
 
 
 const { SECRET_KEY } = require('../../config')
@@ -20,17 +21,17 @@ module.exports = {
 
 
     Mutation: {
-        async login(parent, { name, password}){
+        async login(parent, { email, password}){
 
             console.clear();
-            console.log({name, password});
-            const {errors, valid } = validateLoginInput(name, password);
+            console.log({email, password});
+            const {errors, valid } = validateLoginInput(email, password);
            
             if(!valid) {
                 throw new UserInputError('Errors', {errors} )
             }
             const user = await prisma.user.findFirst({
-                where: { name: String(name) },
+                where: { email: String(email) },
               });
 
             if(!user) {
@@ -69,12 +70,12 @@ module.exports = {
             
             // TODO: Make sure user doesn't already  exists
             const user = await prisma.user.findFirst({
-                where: { name: String(name) },
+                where: { email: String(email) },
               })
             if(user){
-                throw new UserInputError('name is taken', {
+                throw new UserInputError('email is taken', {
                     errors: {
-                        name: 'This name is Taken'
+                        email: 'This name is Taken'
                     }
                 })
             }
@@ -102,6 +103,56 @@ module.exports = {
                 ...res,
                 token
             }
+        },
+
+
+
+        async changePassword(parent, { currentPassword, password, confirmPassword }, context, info){
+            // TODO: validate user data
+            const {valid, errors } = validateChangePassword( password, confirmPassword)
+
+
+            if(!valid) {
+                throw new UserInputError('Error', {errors} )
+            }
+            const user = checkAuth(context);
+
+            console.log('user=====888=', user);
+                try {
+
+                    const getUser = await prisma.user.findFirst({
+                        where: { id: user.id
+                         },
+                      });
+
+                      const isPasswordMatch = await bcrypt.compare(
+                        currentPassword,
+                        getUser.password
+                      );
+                    
+                        console.log('isPasswordMatch', isPasswordMatch);
+                      if(isPasswordMatch){
+
+                        password = await bcrypt.hash(password, 12);
+
+                        res = await prisma.user.update({
+                            where: { id: user.id},
+                            data: {password},
+                          })
+            
+                        return res
+                        
+                      }else{
+                         throw new UserInputError("Current password is not correct" )
+                      }
+                } catch (error) {
+                    throw new Error(error)
+                    
+                }
+                
+            
+            
+          
         },
        
     }

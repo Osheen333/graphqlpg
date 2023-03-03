@@ -8,27 +8,26 @@ type Movie{
     id: ID
     description: String
     movieName: String!
-    createdAt: String
     directorName: String!
     releaseDate: String
-    reviewCount: Int!
-    reviews: [Review]!
+    # reviewCount: Int!
+    reviews: [Review]
 }
 
 
 type Review {
     id: ID!
-    createdAt: String!
     movieId: String!
     userId: String!
     rating: Int
-    comments: String
+    comment: String
 }
 type User{
         id: ID!
         email: String!
         token: String!
         name: String!
+        password: Int
 }
 
 input RegisterInput {
@@ -43,32 +42,17 @@ type Query  {
 }
 type Mutation {
     register(registerInput: RegisterInput): User!
-    login(name: String!, password: String!): User!
-    createMovie(description: String, movieName: String!, createdAt: String, directorName: String!, releaseDate: String): Movie!
+    login(email: String!, password: String!): User!
+    createMovie(description: String, movieName: String!, directorName: String!, releaseDate: String): Movie!
     deleteMovie(movieId: ID!): String!
-    createReview(movieId: String!, body: String!): Movie!
-    deleteReview(movieId: ID!, reviewId: ID!): Movie!
+    createReview(movieId: Int!, comment: String!, rating: Int): Review!
+    deleteReview( reviewId: ID!): Movie!
+    changePassword( currentPassword: String! , password: String!, confirmPassword: String!): User
+    updateMovie(movieId: ID!, description: String, movieName: String, directorName: String, releaseDate: String): Movie!
+    updateReview(reviewId: Int!, comment: String!, rating: Int): Review!
+
 }
 
-
-  type Student {
-    id: ID!
-    email: String!
-    fullName: String!
-    dept: String
-    enrolled: Boolean
-  }
-
-  type Query {
-    enrollment: [Student!]
-    students: [Student!]!
-    student(id: ID!): Student
-  }
-
-  type Mutation {
-    registerStudent(email: String!, fullName: String!, dept: String): Student!
-    enroll(id: ID!): Student
-  }
 `
 module.exports = {
   typeDefs,
