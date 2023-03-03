@@ -9,6 +9,7 @@ Tools used
 -Visual studio code - editor
 -Prettier - Formater
 -EsLint - Code Quality
+-Git - for version control
 
 Testing
 
