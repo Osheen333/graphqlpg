@@ -8,10 +8,6 @@ module.exports.validateRegisterInput = (
     confirmPassword
 ) => {
 
-    console.log( name,
-        email,
-        password,
-        confirmPassword);
     const errors = {};
 
 

@@ -4,9 +4,45 @@ const { prisma } = require("../../database.js");
 
 
 module.exports = {
+    Query: {
+        async getReviewsByMovieId(_, {offset =0 , limit=5, search, movieId}, context){
+            try {
+                const reviews = await prisma.review.findMany({
+                    where: {
+                        movieId: +movieId,
+                        OR: [
+                          {
+                            comment: {
+                              contains: search
+                            }
+                          },
+                        ]
+                      },                    
+                    skip: +offset,
+                    take: +limit,
+                    orderBy: {
+                        id: 'desc',
+                      },
+                    
+                })
+                return reviews;
+            } catch (error) {
+                throw new Error(error)
+            }
+        }
+    },
     Mutation: {
         createReview: async (parent, {movieId, comment, rating }, context) => {
 
+
+            if (rating < 1 || rating > 5) {
+                throw new UserInputError('Empty Review', {
+                    errors: {
+                        comment: "Rating must be between 1 and 5"
+                    }
+                })
+              }
+        
 
             const user = checkAuth(context);
 
@@ -22,7 +58,6 @@ module.exports = {
                   })
 
                 if(movie) {
-                    console.log('user====+++', user);
                     const newReview = {
                         comment,
                         rating,
@@ -34,7 +69,9 @@ module.exports = {
                     return reviewdMoview;
 
 
-                }else throw new UserInputError('Movies not found');
+                }else{
+                     throw new UserInputError('Movies not found');
+                }
             }
                
             },
@@ -44,15 +81,36 @@ module.exports = {
 
                     // TODO: reviewd user is only able to delete review
 
-                         const review = await prisma.review.delete({
-                    where: {
-                      id: +reviewId,
-                    },
-                  });   
+                    try {
+                        const getReview = await prisma.review.findFirst({
+                            where: { id: Number(reviewId) },
+                          })
+                          console.log(getReview);
 
-                  console.log('review', review);
+                          if(getReview.userId === user.id){
+
+                            const review = await prisma.review.delete({
+                                where: {
+                                  id: +reviewId,
+                                },
+                              });   
+                          }else {
+                            throw new AuthenticationError('Error', {
+                                errors: {
+                                    comment: "Auction not allowed"
+                                }
+                            })
+                          }
+                        
+                          
+                    } catch (error) {
+                        throw new UserInputError('Empty Review', {
+                            errors
+                        })
+                    }
+                    
+
                   return 'review deleted successfuly';
-               
           
         },
         updateReview: async (parent, {reviewId, comment, rating }, context) => {
@@ -72,7 +130,6 @@ module.exports = {
                   })
 
                 if(movie) {
-                    console.log('user====+++', user);
                     const newReview = {
                         comment,
                         rating,

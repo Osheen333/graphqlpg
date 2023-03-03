@@ -36,15 +36,20 @@ input RegisterInput {
     confirmPassword: String!
     email: String!
 }
-type Query  {
-    getMovies: [Movie]
-    getMovie(movieId: ID!): Movie
+
+type Query {
+  getMovies(offset: Int, limit: Int, search: String): [Movie!]
+  getMovie(movieId: ID!): Movie
+  getReviewsByMovieId(offset: Int, limit: Int, search: String, movieId: ID!): [Review]
 }
+
+
+
 type Mutation {
     register(registerInput: RegisterInput): User!
     login(email: String!, password: String!): User!
     createMovie(description: String, movieName: String!, directorName: String!, releaseDate: String): Movie!
-    deleteMovie(movieId: ID!): String!
+    deleteMovie(movieId: ID!): String! 
     createReview(movieId: Int!, comment: String!, rating: Int): Review!
     deleteReview( reviewId: ID!): Movie!
     changePassword( currentPassword: String! , password: String!, confirmPassword: String!): User

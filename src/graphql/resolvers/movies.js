@@ -5,9 +5,30 @@ const checkAuth = require('../../util/check-auth')
 
 module.exports = {
     Query: {
-        async getMovies(){
+        async getMovies(_, {offset = 2, limit= 5, search}, context){
             try {
                 const movies = await prisma.movie.findMany({
+                    where: {
+                        OR: [
+                          {
+                            description: {
+                              contains: search
+                            }
+                          },
+                          {
+                            directorName: {
+                              contains: search
+                            }
+                          },
+                          {
+                            movieName: {
+                              contains: search
+                            }
+                          }
+                        ]
+                      },                    
+                    skip: offset,
+                    take: limit,
                     orderBy: {
                         id: 'desc',
                       },
@@ -24,7 +45,6 @@ module.exports = {
                     where: { id: Number(movieId) },
                   })
 
-                console.log(movie);
                 if(movie) {
                     return movie
                 }else {
@@ -38,12 +58,9 @@ module.exports = {
     },
         Mutation: {
             async createMovie(_, {description, movieName, directorName, releaseDate}, context){
-                console.log(description, movieName, directorName, releaseDate);
                 
             const user = await checkAuth(context);
-                console.log('user', user);
 
-                console.log('=====');
    
             const newMovie = {
                 userId: user.id,
@@ -52,7 +69,6 @@ module.exports = {
                 directorName,
                 releaseDate
             };
-            console.log('newMovie', newMovie);
             const movie = await prisma.movie.create({data:newMovie});
 
 
@@ -71,11 +87,15 @@ module.exports = {
                         where: { id: Number(movieId) },
                       })
                     //TODO: need to fix if condition prisma.movie.userName needs to taken from 
-                    console.log(user.name);
-                    console.log(movie.name);
-                if(user.name !== movie.name){
-                    console.log('=====', movieId);
-                    await prisma.movie.delete({
+                if(user.id === movie.userId){
+                    await prisma.$executeRaw`
+
+                    DELETE FROM movie
+                    WHERE id = 1;
+                  
+                  `
+                    
+                    delete({
                         where: {
                           id: +movieId,
                         },
@@ -91,10 +111,8 @@ module.exports = {
             },
 
             async updateMovie(_, {movieId, description, movieName, directorName, releaseDate}, context){
-                console.log(description, movieName, directorName, releaseDate);
                 
             const user = await checkAuth(context);
-                console.log('user', user);
                 try {
 
                 const getMovie = await prisma.movie.findFirst({
@@ -107,8 +125,6 @@ module.exports = {
 
                   // consider owner of the movie
                 if(+user.id === +getMovie.userId){
-                    console.log(user.id, getMovie.userId);
-                console.log('=====');
    
             const newMovie = {
                 description,
@@ -116,7 +132,6 @@ module.exports = {
                 directorName,
                 releaseDate
             };
-            console.log('newMovie', newMovie);
             const movie = await prisma.movie.update({
                 where: { id: +movieId},
                 data: newMovie,

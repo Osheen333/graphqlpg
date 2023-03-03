@@ -23,8 +23,6 @@ module.exports = {
     Mutation: {
         async login(parent, { email, password}){
 
-            console.clear();
-            console.log({email, password});
             const {errors, valid } = validateLoginInput(email, password);
            
             if(!valid) {
@@ -97,8 +95,6 @@ module.exports = {
 
             const token = await generateToken(res);
 
-                console.log('res========', res);
-                console.log('token ===', token);
             return {
                 ...res,
                 token
@@ -117,7 +113,6 @@ module.exports = {
             }
             const user = checkAuth(context);
 
-            console.log('user=====888=', user);
                 try {
 
                     const getUser = await prisma.user.findFirst({
@@ -130,7 +125,6 @@ module.exports = {
                         getUser.password
                       );
                     
-                        console.log('isPasswordMatch', isPasswordMatch);
                       if(isPasswordMatch){
 
                         password = await bcrypt.hash(password, 12);
