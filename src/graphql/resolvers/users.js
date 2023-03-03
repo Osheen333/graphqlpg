@@ -94,6 +94,7 @@ module.exports = {
       const token = await generateToken(res);
 
       return {
+        // eslint-disable-next-line node/no-unsupported-features/es-syntax
         ...res,
         token,
       };
@@ -102,8 +103,7 @@ module.exports = {
     async changePassword(
       parent,
       {currentPassword, password, confirmPassword},
-      context,
-      info
+      context
     ) {
       // TODO: validate user data
       const {valid, errors} = validateChangePassword(password, confirmPassword);

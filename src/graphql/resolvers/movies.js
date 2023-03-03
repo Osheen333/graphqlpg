@@ -45,9 +45,8 @@ module.exports = {
 
         if (movie) {
           return movie;
-        } else {
-          throw new Error('Movie not Found');
         }
+        throw new Error('Movie not Found');
       } catch (error) {
         throw new Error(error);
       }
@@ -80,8 +79,6 @@ module.exports = {
         const movie = await prisma.movie.findFirst({
           where: {id: Number(movieId)},
         });
-        //TODO: need to fix if condition prisma.movie.userName needs to taken from
-
         if (user.id === movie.userId) {
           await prisma.movie.delete({
             where: {

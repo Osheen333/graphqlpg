@@ -96,7 +96,7 @@ module.exports = {
       }
     },
     updateReview: async (parent, {reviewId, comment, rating}, context) => {
-      const user = checkAuth(context);
+      checkAuth(context);
 
       if (comment.trim() === '') {
         throw new UserInputError('Empty Review', {

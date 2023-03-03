@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports.validateRegisterInput = (
   name,
   email,
@@ -11,12 +13,8 @@ module.exports.validateRegisterInput = (
   }
   if (email.trim() === '') {
     errors.email = 'email mut not empty';
-  } else {
-    const regEx =
-      /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    if (!email.match(regEx)) {
-      errors.email = 'email must be vallid';
-    }
+  } else if (!email.match(process.env.regEx)) {
+    errors.email = 'email must be vallid';
   }
   if (password.trim() === '') {
     errors.password = 'password must not empty';
@@ -33,12 +31,8 @@ module.exports.validateLoginInput = (email, password) => {
   const errors = {};
   if (email.trim() === '') {
     errors.email = 'email mut not empty';
-  } else {
-    const regEx =
-      /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-    if (!email.match(regEx)) {
-      errors.email = 'email must be vallid';
-    }
+  } else if (!process.env.regEx) {
+    errors.email = 'email must be vallid';
   }
   if (password.trim() === '') {
     errors.password = 'Password must not empty';
