@@ -88,14 +88,7 @@ module.exports = {
                       })
                     //TODO: need to fix if condition prisma.movie.userName needs to taken from 
                 if(user.id === movie.userId){
-                    await prisma.$executeRaw`
-
-                    DELETE FROM movie
-                    WHERE id = 1;
-                  
-                  `
-                    
-                    delete({
+                    await prisma.movie.delete({
                         where: {
                           id: +movieId,
                         },

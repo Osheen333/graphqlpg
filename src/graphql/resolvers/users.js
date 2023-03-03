@@ -5,9 +5,9 @@ const {validateRegisterInput, validateLoginInput, validateChangePassword} = requ
 const {UserInputError } = require('apollo-server');
 const { prisma } = require("../../database.js");
 const checkAuth = require('../../util/check-auth')
+require('dotenv').config();
 
 
-const { SECRET_KEY } = require('../../config')
 
 
 function generateToken(user){
@@ -15,7 +15,7 @@ function generateToken(user){
         id: user.id,
         email: user.email,
         name: user.name
-    }, SECRET_KEY, { expiresIn: '3h'});
+    }, process.env.SECRET_KEY, { expiresIn: '3h'});
 }
 module.exports = {
 

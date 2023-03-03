@@ -1,7 +1,7 @@
 {
   "name": "node-graphql",
   "version": "1.0.0",
-  "description": "Grapghql API with Nodejs, Prisma, Postgres and Docker",
+  "description": "Grapghql API with Nodejs, Prisma, Postgres ",
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src"
@@ -13,11 +13,12 @@
     "@prisma/client": "^2.29.1",
     "apollo-server": "^3.1.2",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
     "graphql": "^15.5.1",
     "jsonwebtoken": "^9.0.0",
     "nodemon": "^2.0.21"
   },
   "devDependencies": {
-    "prisma": "^2.30.3"
+    "prisma": "^4.11.0"
   }
 }

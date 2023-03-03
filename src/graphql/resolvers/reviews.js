@@ -7,6 +7,8 @@ module.exports = {
     Query: {
         async getReviewsByMovieId(_, {offset =0 , limit=5, search, movieId}, context){
             try {
+
+                const userId = 1;
                 const reviews = await prisma.review.findMany({
                     where: {
                         movieId: +movieId,
@@ -20,9 +22,7 @@ module.exports = {
                       },                    
                     skip: +offset,
                     take: +limit,
-                    orderBy: {
-                        id: 'desc',
-                      },
+                                        
                     
                 })
                 return reviews;
@@ -94,6 +94,8 @@ module.exports = {
                                   id: +reviewId,
                                 },
                               });   
+                  return 'review deleted successfuly';
+
                           }else {
                             throw new AuthenticationError('Error', {
                                 errors: {
@@ -105,12 +107,11 @@ module.exports = {
                           
                     } catch (error) {
                         throw new UserInputError('Empty Review', {
-                            errors
+                            error
                         })
                     }
                     
 
-                  return 'review deleted successfuly';
           
         },
         updateReview: async (parent, {reviewId, comment, rating }, context) => {
