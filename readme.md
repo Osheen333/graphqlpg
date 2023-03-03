@@ -10,3 +10,7 @@ Tools used
 -Prettier - Formater
 -EsLint - Code Quality
 
+Testing
+
+Query collection  is shared as attachment , after registeration each feture can be tested.
+
